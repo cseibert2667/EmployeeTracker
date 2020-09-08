@@ -171,3 +171,14 @@ function addRole() {
 })
 }
 
+function addDept() {
+  inquirer.prompt([
+    {
+      message: "What is the name of the department you would like to add?",
+      name: "newDept"
+    }
+  ]).then(function(response){
+    connection.query(`INSERT INTO department (name) VALUE ("${response.newDept}")`)
+    mainMenu();
+  })
+}
