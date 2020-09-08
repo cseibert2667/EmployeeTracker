@@ -138,9 +138,10 @@ function addEmp () {
       }
     ]).then(function(response){
       // TODO: Need to figure out how to get ID for role & mgr -- currently only gets names/titles because that is the only thing we push to the arrays. seems I will need to look into and learn promise-mysql, possibly re-write the function
-      connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ("${response.newFN}", "${response.newLN}", ${roleID}, ${mgrID})`)
+      connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ("${response.newFN}", "${response.newLN}", (SELECT id FROM role WHERE role.title = "${response.newRole}"), (SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ',e.last_name) = "${response.newMgr}"))`)
       mainMenu();
     })
   })
 })
 }
+
