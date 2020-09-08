@@ -105,3 +105,42 @@ function viewDepts() {
     })
   })
 }
+
+function addEmp () {
+  connection.query("SELECT title FROM role", function (err,res){
+    if (err) throw err;
+    const roles = [];
+    res.forEach((role) => roles.push(role.title));
+    connection.query(`SELECT CONCAT(e.first_name, ' ',e.last_name) AS name FROM employee e`, function(err,res){
+    if (err) throw err;
+    const mgrs = [];
+    res.forEach((mgr) => mgrs.push(mgr.name));
+    inquirer.prompt([
+      {
+        message: "What is the employee's first name?",
+        name: "newFN"
+      },
+      {
+        message: "What is the employee's last name?",
+        name: "newLN"
+      },
+      {
+        type: "list",
+        message: "What role will be assigned to this employee?",
+        choices: roles,
+        name: "newRole"
+      },
+      {
+        type: "list",
+        message: "Who will be this employee's manager?",
+        choices: mgrs,
+        name: "newMgr"
+      }
+    ]).then(function(response){
+      // TODO: Need to figure out how to get ID for role & mgr -- currently only gets names/titles because that is the only thing we push to the arrays. seems I will need to look into and learn promise-mysql, possibly re-write the function
+      connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ("${response.newFN}", "${response.newLN}", ${roleID}, ${mgrID})`)
+      mainMenu();
+    })
+  })
+})
+}
