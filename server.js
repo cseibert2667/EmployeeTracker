@@ -249,7 +249,7 @@ function updateRole() {
             name: "selRole",
           },
         ]).then(function(response){
-          console.log(response)
+          connection.query(`UPDATE employee e SET role_id = (SELECT id FROM role WHERE role.title = "${response.selRole}") WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.selEmp}"`)
           mainMenu();
         })
       });
