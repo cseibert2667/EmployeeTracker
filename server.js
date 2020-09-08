@@ -29,6 +29,7 @@ function mainMenu() {
           "Add Role",
           "Add Department",
           "Update Employee Role",
+          "Delete Employee",
           "Quit",
         ],
         name: "menuOption",
@@ -56,6 +57,9 @@ function mainMenu() {
           break;
         case "Update Employee Role":
           updateRole();
+          break;
+        case "Delete Employee":
+          deleteEmp();
           break;
         case "Quit":
           connection.end();
@@ -255,4 +259,23 @@ function updateRole() {
       });
     }
   );
+}
+
+function deleteEmp() {
+  connection.query(`SELECT CONCAT(e.first_name, " ", e.last_name) AS name FROM employee e`, function(err,res){
+    if (err) throw err;
+    const emps = [];
+    res.forEach((emp) => emps.push(emp.name));
+    inquirer.prompt([
+      {
+        type: "list",
+        message: "Which employee would you like to delete?",
+        choices: emps,
+        name: "delEmp"
+      }
+    ]).then(function(response){
+      connection.query(`DELETE FROM employee e WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.delEmp}"`)
+      mainMenu();
+    })
+  })
 }
