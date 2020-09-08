@@ -174,6 +174,9 @@ function addEmp() {
             connection.query(
               `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ("${response.newFN}", "${response.newLN}", (SELECT id FROM role WHERE role.title = "${response.newRole}"), (SELECT id FROM employee e WHERE CONCAT(e.first_name, ' ',e.last_name) = "${response.newMgr}"))`
             );
+            console.log(
+              `---New employee added: "${response.newFN} ${response.newLN}"---`
+            );
             mainMenu();
           });
       }
@@ -207,6 +210,9 @@ function addRole() {
         connection.query(
           `INSERT INTO role (title, salary, department_id) VALUE ("${response.newTitle}", ${response.newSal}, (SELECT id FROM department WHERE department.name = "${response.dept}"))`
         );
+        console.log(
+          `---New role added to the "${response.dept}" department: "${response.newTitle}"---`
+        );
         mainMenu();
       });
   });
@@ -224,6 +230,7 @@ function addDept() {
       connection.query(
         `INSERT INTO department (name) VALUE ("${response.newDept}")`
       );
+      console.log(`---New department created: "${response.newDept}"---`);
       mainMenu();
     });
 }
@@ -239,43 +246,58 @@ function updateRole() {
         if (err) throw err;
         const roles = [];
         res.forEach((role) => roles.push(role.title));
-        inquirer.prompt([
-          {
-            type: "list",
-            message: "Which employee would you like to update?",
-            choices: emps,
-            name: "selEmp",
-          },
-          {
-            type: "list",
-            message: "What is their new role?",
-            choices: roles,
-            name: "selRole",
-          },
-        ]).then(function(response){
-          connection.query(`UPDATE employee e SET role_id = (SELECT id FROM role WHERE role.title = "${response.selRole}") WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.selEmp}"`)
-          mainMenu();
-        })
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              message: "Which employee would you like to update?",
+              choices: emps,
+              name: "selEmp",
+            },
+            {
+              type: "list",
+              message: "What is their new role?",
+              choices: roles,
+              name: "selRole",
+            },
+          ])
+          .then(function (response) {
+            connection.query(
+              `UPDATE employee e SET role_id = (SELECT id FROM role WHERE role.title = "${response.selRole}") WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.selEmp}"`
+            );
+            console.log(
+              `---Employee "${response.selEmp}" has been updated to the "${response.selRole}" role---`
+            );
+            mainMenu();
+          });
       });
     }
   );
 }
 
 function deleteEmp() {
-  connection.query(`SELECT CONCAT(e.first_name, " ", e.last_name) AS name FROM employee e`, function(err,res){
-    if (err) throw err;
-    const emps = [];
-    res.forEach((emp) => emps.push(emp.name));
-    inquirer.prompt([
-      {
-        type: "list",
-        message: "Which employee would you like to delete?",
-        choices: emps,
-        name: "delEmp"
-      }
-    ]).then(function(response){
-      connection.query(`DELETE FROM employee e WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.delEmp}"`)
-      mainMenu();
-    })
-  })
+  connection.query(
+    `SELECT CONCAT(e.first_name, " ", e.last_name) AS name FROM employee e`,
+    function (err, res) {
+      if (err) throw err;
+      const emps = [];
+      res.forEach((emp) => emps.push(emp.name));
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            message: "Which employee would you like to delete?",
+            choices: emps,
+            name: "delEmp",
+          },
+        ])
+        .then(function (response) {
+          connection.query(
+            `DELETE FROM employee e WHERE CONCAT(e.first_name, " ", e.last_name) = "${response.delEmp}"`
+          );
+          console.log(`---Employee "${response.delEmp}" has been deleted---`);
+          mainMenu();
+        });
+    }
+  );
 }
