@@ -298,13 +298,5 @@ function deleteEmp() {
 
 module.exports = {
   mainMenu,
-  viewEmps,
-  viewRoles,
-  viewDepts,
-  addEmp,
-  addRole,
-  addDept,
-  updateRole,
-  deleteEmp,
   connection
 };
