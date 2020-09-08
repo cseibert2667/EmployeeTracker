@@ -1,16 +1,6 @@
-const mysql = require("mysql");
-const cTable = require("console.table");
 const queries = require("./queries")
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "",
-  database: "employees_db",
-});
-
-connection.connect(function (err) {
+queries.connection.connect(function (err) {
   if (err) throw err;
   queries.mainMenu();
 });
