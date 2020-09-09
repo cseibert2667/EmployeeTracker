@@ -30,6 +30,7 @@ function mainMenu() {
           "Update Employee Role",
           "Delete Employee",
           "Delete Role",
+          "Delete Department",
           "Quit",
         ],
         name: "menuOption",
@@ -63,6 +64,9 @@ function mainMenu() {
           break;
         case "Delete Role":
           deleteRole();
+          break;
+        case "Delete Department":
+          deleteDept();
           break;
         case "Quit":
           process.exit();
@@ -319,9 +323,28 @@ function deleteRole() {
         }
       ]).then(function(response){
         connection.query(`DELETE FROM role WHERE role.title = "${response.delRole}"`);
-        console.log(`---Role "${response.delRole}" has been deleted---`);
+        console.log(`---The "${response.delRole}" role has been deleted---`);
         mainMenu();
       })
   })
 }
 
+function deleteDept() {
+  connection.query(`SELECT name FROM department`, function(err,res){
+    if (err) throw err;
+    const depts = [];
+    res.forEach((dept) => depts.push(dept.name));
+    inquirer.prompt([
+      {
+        type: "list",
+        message: "Which department would you like to remove?",
+        choices: depts,
+        name: "delDept"
+      }
+    ]).then(function(response){
+      connection.query(`DELETE FROM department WHERE department.name = "${response.delDept}"`);
+      console.log(`---The "${response.delDept}" department has been deleted---`);
+      mainMenu();
+    })
+  })
+}
